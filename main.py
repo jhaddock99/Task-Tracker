@@ -12,37 +12,44 @@
 
 import sys
 import json
+from datetime import datetime
 
-# Adding a task
+# Adding a new task
 if sys.argv[1] == "add":
-    print("Adding task: ")
-    # Print the task that the user wants to add
-    print(sys.argv[2])
-    # Define the task that the user wants to add
-    task = sys.argv[2]
+    print("Adding task: " + sys.argv[2])
 
-    # First, we need to check if the json file exists
     try:
-        # Try to open the json
         with open("task_list.json", "r") as f:
             task_list = json.load(f)
     
-    # If the json file does not exist, catch this with a FileNotFoundError
-    except FileNotFoundError:
+    except (FileNotFoundError, json.JSONDecodeError):
         task_list = []
 
-    # Write the task to task_list.json
+    id = len(task_list) + 1
+    task = {
+        "id": id,
+        "description": sys.argv[2],
+        "status": "todo",
+        "createdAt": datetime.now().isoformat(),
+        "updatedAt": datetime.now().isoformat()
+    }
+    
     with open("task_list.json", "w") as f:
         task_list.append(task)
-        json.dump(task_list, f)
+        json.dump(task_list, f, indent = 4)
 
+# Listing all tasks
+elif sys.argv[1] == "list":
+    try:
+        with open("task_list.json", "r") as f:
+            task_list = json.load(f)
+    
+    except (FileNotFoundError, json.JSONDecodeError):
+        task_list = []
+        print("Task list is empty.")
 
-
-elif sys.argv[1] == "update":
-    print("Updating task: ")
-    print(sys.argv[2])
-
-
-elif sys.argv[1] == "delete":
-    print("Deleting task: ")
-    print(sys.argv[2])
+    for task in task_list:
+        task_id = task["id"]
+        task_description = task["description"]
+        task_status = task["status"]
+        print("Task ", task_id, "Description: ", task_description, "Status: " ,task_status)
