@@ -18,22 +18,25 @@ from datetime import datetime
 if sys.argv[1] == "add":
     print("Adding task: " + sys.argv[2])
 
+    # check if task_list.json exists
     try:
         with open("task_list.json", "r") as f:
             task_list = json.load(f)
     
+    # task_list is empty or doesn't exist
     except (FileNotFoundError, json.JSONDecodeError):
         task_list = []
 
-    id = len(task_list) + 1
+    # define the list structure for the json
     task = {
-        "id": id,
+        "id": len(task_list) + 1,
         "description": sys.argv[2],
         "status": "todo",
         "createdAt": datetime.now().isoformat(),
         "updatedAt": datetime.now().isoformat()
     }
     
+    # write to the json with dump and indent = 4 for json formatting
     with open("task_list.json", "w") as f:
         task_list.append(task)
         json.dump(task_list, f, indent = 4)
@@ -48,8 +51,14 @@ elif sys.argv[1] == "list":
         task_list = []
         print("Task list is empty.")
 
-    for task in task_list:
-        task_id = task["id"]
-        task_description = task["description"]
-        task_status = task["status"]
-        print("Task ", task_id, "Description: ", task_description, "Status: " ,task_status)
+    if len(sys.argv) > 2:
+        status_input = sys.argv[2]
+        # filter tasks by status
+        for task in task_list:
+            if status_input == task["status"]:
+                print(f"[{task['id']}] {task['description']} - {task['status']}")
+
+    else:
+        # print all tasks
+        for task in task_list:
+            print(f"[{task['id']}] {task['description']} - {task['status']}")
