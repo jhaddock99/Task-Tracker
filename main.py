@@ -13,19 +13,35 @@
 import sys
 import json
 
+# Adding a task
 if sys.argv[1] == "add":
     print("Adding task: ")
+    # Print the task that the user wants to add
     print(sys.argv[2])
+    # Define the task that the user wants to add
+    task = sys.argv[2]
 
-    with open("tasks.json", "r") as f:
-        tasks = json.load(f)
-        tasks.append(sys.argv[2])
-    with open("tasks.json", "w") as f:
-        json.dump(tasks, f)
+    # First, we need to check if the json file exists
+    try:
+        # Try to open the json
+        with open("task_list.json", "r") as f:
+            task_list = json.load(f)
+    
+    # If the json file does not exist, catch this with a FileNotFoundError
+    except FileNotFoundError:
+        task_list = []
+
+    # Write the task to task_list.json
+    with open("task_list.json", "w") as f:
+        task_list.append(task)
+        json.dump(task_list, f)
+
+
 
 elif sys.argv[1] == "update":
     print("Updating task: ")
     print(sys.argv[2])
+
 
 elif sys.argv[1] == "delete":
     print("Deleting task: ")
